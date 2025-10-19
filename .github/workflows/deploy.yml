@@ -9,8 +9,8 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+  pages: write        # nötig für Deploy
+  id-token: write     # nötig für Deploy
 
 concurrency:
   group: "pages"
@@ -39,7 +39,12 @@ jobs:
           mkdir -p dist
           cp turkey.xml dist/
 
-      - name: Upload artifact for Pages
+      # WICHTIG: Pages für diesen Build konfigurieren
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Artefakt (dist) für Pages hochladen
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -49,6 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
